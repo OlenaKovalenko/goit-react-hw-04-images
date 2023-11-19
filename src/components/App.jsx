@@ -28,10 +28,11 @@ export const App = () => {
       setError(false);
     
       const imageData = await fetchBySearch({ newQueryPart, page });
+      const { hits, totalHits } = imageData;
 
       if (imageData !== null) {
-        setImages(prevImages => [...prevImages, ...imageData.hits]);
-        setLoadMore(page < Math.ceil(imageData.totalHits / 12));
+        setImages(prevImages => [...prevImages, ...hits]);
+        setLoadMore(page < Math.ceil(totalHits / 12));
       }
 
     } catch (error) {
@@ -43,7 +44,7 @@ export const App = () => {
     }
   };
     fetchImages()
-}, [query, page]);
+}, [query, page, error]);
   
 
   const handleFormSubmit = newQuery => {
