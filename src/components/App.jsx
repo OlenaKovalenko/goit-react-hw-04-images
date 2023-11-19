@@ -1,4 +1,4 @@
-import React, { Component } from "react"; 
+import React, { useEffect, useState } from "react"; 
 import { fetchBySearch } from "api";
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -8,91 +8,72 @@ import { Button } from "./Button/Button";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { Modal } from "./Modal/Modal";
 
-export class App extends Component {
-  state = { 
-    images: [],
-    query: "",
-    page: 1,
-    largeImageURL: "",
-    isLoading: false,
-    loadMore: false,
-    isShowModal: false,
-    error: false,
-  } 
+export const App = () => {
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
-      this.fetchImages();
-    }
-  }
+  const[images, setImages] = useState([]);
+  const[query, setQuery] = useState("");
+  const[page, setPage] = useState(1);
+  const[largeImageURL, setLargeImageURL] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isShowModal, setIsShowModal] = useState(false);
+  const[loadMore, setLoadMore] = useState(false);
+  const[error, setError] = useState(false);
 
-  handleFormSubmit = newQuery => {
-    this.setState({
-      query: `${Date.now()}/${newQuery}`,
-      page: 1,
-      images: [],
-    });
-  };
-
-  handleLoadMore = () => {
-    this.setState(prevState => {
-      return {
-        page: prevState.page + 1,
-      };
-    });
-  };
-
-  handleImageClick = image => {
-    this.setState({
-      isShowModal: true,
-      largeImageURL: image.largeImageURL,
-    });
-  };
-
-  handleModalClose = () => {
-    this.setState({
-      isShowModal: false,
-      largeImageURL: "",
-    });
-  };
-
-  fetchImages = async () => {
-    const { query, page } = this.state;
+  useEffect(() => {
+    async function fetchImages () {
     const newQueryPart = query.split('/').pop();
 
     try {
-      this.setState({
-        isLoading: true,
-        error: false,
-      });
+      setIsLoading(true);
+      setError(false);
+    
       const imageData = await fetchBySearch({ newQueryPart, page });
 
       if (imageData !== null) {
-
-        this.setState(prevState => ({
-          images: [...prevState.images, ...imageData.hits],
-          loadMore: page < Math.ceil(imageData.totalHits /12),
-        }));
+        setImages(prevImages => [...prevImages, ...imageData.hits]);
+        setLoadMore(page < Math.ceil(imageData.totalHits / 12));
       }
 
     } catch (error) {
-      this.setState({ error: true });
+      setError(true);
       toast.error('Oops! Something went wrong! Please try reloading this page!');
 
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   };
+    fetchImages()
+}, [query, page]);
+  
 
-  render() { 
-    const { images, isLoading, loadMore, largeImageURL, isShowModal } = this.state;
+  const handleFormSubmit = newQuery => {
+    setQuery(`${Date.now()}/${newQuery}`);
+    setPage(1);
+    setImages([]);
+    };
+
+  const handleLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
+    };
+
+  const handleImageClick = image => {
+    setIsShowModal(true);
+    setLargeImageURL(image.largeImageURL);
+  };
+
+  const handleModalClose = () => {
+    setIsShowModal(false);
+    setLargeImageURL("");
+  };
 
     return (
       <>
-        <Searchbar onSubmit={this.handleFormSubmit} />
+        <Searchbar onSubmit={handleFormSubmit} />
 
         {isLoading && (
           <Circles
+            marginLeft="auto"
+            marginRight="auto"
             height="320"
             width="320"
             color="#303f9f"
@@ -103,16 +84,16 @@ export class App extends Component {
           />
         )}
 
-        <ImageGallery items={images} isLoading={isLoading} onImageClick={ this.handleImageClick} />
+        <ImageGallery items={images} isLoading={isLoading} onImageClick={handleImageClick} />
 
-        {images.length > 0 && loadMore && (<Button onClick={this.handleLoadMore} />)}
+        {images.length > 0 && loadMore && (<Button onClick={handleLoadMore} />)}
 
-        {isShowModal && (<Modal largeImageURL={largeImageURL} onClose={this.handleModalClose} />)}
+        {isShowModal && (<Modal largeImageURL={largeImageURL} onClose={handleModalClose} />)}
 
         <Toaster />
 
       </>
     );
-  }
+  
 }
  
