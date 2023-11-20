@@ -6,7 +6,7 @@ import { Circles } from "react-loader-spinner";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Button } from "./Button/Button";
 import { Searchbar } from "./Searchbar/Searchbar";
-import { Modal } from "./Modal/Modal";
+import { MyModal } from "./MyModal/MyModal";
 
 export const App = () => {
 
@@ -60,12 +60,12 @@ export const App = () => {
     setPage(prevPage => prevPage + 1);
     };
 
-  const handleImageClick = image => {
+  const openModal = image => {
     setIsShowModal(true);
     setLargeImageURL(image.largeImageURL);
   };
 
-  const handleModalClose = () => {
+  const closeModal = () => {
     setIsShowModal(false);
     setLargeImageURL("");
   };
@@ -88,11 +88,11 @@ export const App = () => {
           />
         )}
 
-        <ImageGallery items={images} isLoading={isLoading} onImageClick={handleImageClick} />
+        <ImageGallery items={images} isLoading={isLoading} onImageClick={openModal} />
 
         {images.length > 0 && loadMore && (<Button onClick={handleLoadMore} />)}
 
-        {isShowModal && (<Modal largeImageURL={largeImageURL} onClose={handleModalClose} />)}
+        {isShowModal && (<MyModal modalIsOpen={isShowModal} src={largeImageURL} closeModal={closeModal} />)}
 
         <Toaster />
 
