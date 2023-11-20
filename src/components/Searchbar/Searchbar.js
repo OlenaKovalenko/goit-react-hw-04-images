@@ -1,18 +1,15 @@
-import { Component } from "react";
+import { useState } from "react";
 import { ImSearch } from "react-icons/im";
 import '../../styles.css';
 
-export class Searchbar extends Component {
-   
-    state = {
-        query: '',
-    }
-    
-    handleChange = event => this.setState({ query: event.currentTarget.value.toLowerCase() });
+export const Searchbar = () => {
 
-    handleSubmit = event => {
-        event.preventDefault();
-        const { query } = this.state;
+    const [query, setQuery] = useState("");
+    
+    const handleChange = e => setQuery(e.currentTarget.value.toLowerCase());
+
+    const handleSubmit = e => {
+        e.preventDefault();
 
         if (query.trim() === '') {
             alert('Please fill out the search field!');
@@ -20,33 +17,28 @@ export class Searchbar extends Component {
         }
 
         this.props.onSubmit(query);
-        this.setState({ query: '' });
+        setQuery("");
     }
 
-    render() { 
-        const { query } = this.state;
-
-        return (
+    return (
         <header className="Searchbar">
-            <form className="SearchForm" onSubmit={this.handleSubmit}>
-                    <button type="submit" className="SearchForm-button">
-                        <ImSearch />
-                    {/* <span className="SearchForm-button-label">Search <TbSearch /></span> */}
+            <form className="SearchForm" onSubmit={handleSubmit}>
+                <button type="submit" className="SearchForm-button">
+                    <ImSearch />
                 </button>
 
                 <input
-                        className="SearchForm-input"
-                        type="text"
-                        autoComplete="off"
-                        autoFocus
-                        placeholder="Search images and photos"
-                        value={query}
-                        onChange={ this.handleChange}
+                    className="SearchForm-input"
+                    type="text"
+                    autoComplete="off"
+                    autoFocus
+                    placeholder="Search images and photos"
+                    value={query}
+                    onChange={handleChange}
                 />
             </form>
         </header>
     )
-    }
 }
 
 

@@ -20,6 +20,9 @@ export const App = () => {
   const[error, setError] = useState(false);
 
   useEffect(() => {
+    if (!query.trim()) {
+      return;
+    }
     async function fetchImages () {
     const newQueryPart = query.split('/').pop();
 
