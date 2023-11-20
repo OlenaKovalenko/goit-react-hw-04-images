@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ImSearch } from "react-icons/im";
 import '../../styles.css';
 
-export const Searchbar = () => {
+export const Searchbar = ({onSubmit}) => {
 
     const [query, setQuery] = useState("");
     
@@ -16,7 +16,7 @@ export const Searchbar = () => {
             return;
         }
 
-        this.props.onSubmit(query);
+        onSubmit(query);
         setQuery("");
     }
 
