@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { fetchBySearch } from "api";
 import toast, { Toaster } from 'react-hot-toast';
 
-import { Circles } from "react-loader-spinner";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Button } from "./Button/Button";
 import { Searchbar } from "./Searchbar/Searchbar";
-import { MyModal } from "./MyModal/MyModal";
+import { ModalWindow } from "./Modal/Modal";
+import { Loader } from "./Loader/Loader";
 
 export const App = () => {
 
@@ -17,7 +17,6 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isShowModal, setIsShowModal] = useState(false);
   const[loadMore, setLoadMore] = useState(false);
-  const[error, setError] = useState(false);
 
   useEffect(() => {
     if (!query.trim()) {
@@ -28,7 +27,6 @@ export const App = () => {
 
     try {
       setIsLoading(true);
-      setError(false);
     
       const imageData = await fetchBySearch({ newQueryPart, page });
       const { hits, totalHits } = imageData;
@@ -39,7 +37,6 @@ export const App = () => {
       }
 
     } catch (error) {
-      setError(true);
       toast.error('Oops! Something went wrong! Please try reloading this page!');
 
     } finally {
@@ -47,7 +44,7 @@ export const App = () => {
     }
   };
     fetchImages()
-}, [query, page, error]);
+}, [query, page]);
   
 
   const handleFormSubmit = newQuery => {
@@ -74,25 +71,13 @@ export const App = () => {
       <>
         <Searchbar onSubmit={handleFormSubmit} />
 
-        {isLoading && (
-          <Circles
-            marginLeft="auto"
-            marginRight="auto"
-            height="320"
-            width="320"
-            color="#303f9f"
-            ariaLabel="circles-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
-            visible={true}
-          />
-        )}
+        {isLoading && <Loader/>}
 
         <ImageGallery items={images} isLoading={isLoading} onImageClick={openModal} />
 
         {images.length > 0 && loadMore && (<Button onClick={handleLoadMore} />)}
 
-        {isShowModal && (<MyModal modalIsOpen={isShowModal} src={largeImageURL} closeModal={closeModal} />)}
+        {isShowModal && (<ModalWindow modalIsOpen={isShowModal} src={largeImageURL} closeModal={closeModal} />)}
 
         <Toaster />
 

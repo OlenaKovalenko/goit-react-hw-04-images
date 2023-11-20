@@ -1,4 +1,3 @@
-// import { Component } from "react"; 
 import Modal from "react-modal";
 import '../../styles.css';
 
@@ -15,7 +14,7 @@ const customStyles = {
 
 Modal.setAppElement('#root');
 
-export const MyModal = ({ modalIsOpen, closeModal, src }) => {
+export const ModalWindow = ({ modalIsOpen, closeModal, src }) => {
     return (
         <Modal
             isOpen={modalIsOpen}
